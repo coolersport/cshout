@@ -34,6 +34,7 @@ $cshout_jsconfig['username']        = ''; // pre-populated username
 $cshout_jsconfig['order']           = 'topdown';                     // bottomup: latest shout at bottom, topdown: latest shout on top
 
 /******* BACKEND CONFIG *******/
+if (!isset($cshout_config['theme'])) // check if theme has been set before
 $cshout_config['theme']           = 'default';
 $cshout_config['adminname']       = 'cool';                     // leave blank to disable admin login
 $cshout_config['adminpassword']   = '1q2w3e4r';                     // leave blank to disable admin login
