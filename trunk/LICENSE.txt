@@ -1,0 +1,12 @@
+******************************************************************************
+  CShout licensing conditions
+  (c) 2001-2009 Tien D. Tran (coolersport@yahoo.com)
+******************************************************************************
+
+  CShout shoutbox is free software under the terms of the GNU General Public
+  License. See GPL.txt or GPL.html distributed with this package for GNU/GPL
+  license.
+  
+  Visit project page at http://coolersport.info
+
+******************************************************************************
