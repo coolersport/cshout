@@ -146,13 +146,13 @@ $cshout_config['datafilewarning'] = '';
 
 /******* BACKEND CONFIG ENDS - DO NOT MODIFY ANY FURTHER TO AVOID BREAKING STUFF *******/
 
-if ($cshout_config['theme'] && file_exists(dirname(__FILE__) . '/themes/' . $cshout_config['theme'] . '/theme.conf.php'))
-	include_once(dirname(__FILE__) . '/themes/' . $cshout_config['theme'] . '/theme.conf.php');
+if ($cshout_config['theme'] && file_exists(dirname(__FILE__) . '/themes/' . $cshout_config['theme'] . '/' . $cshout_config['theme'] . '.conf.php'))
+	include_once(dirname(__FILE__) . '/themes/' . $cshout_config['theme'] . '/' . $cshout_config['theme'] . '.conf.php');
 
 function cshout_includes() {
 	global $cshout_config;
 ?>
-<link rel="stylesheet" type="text/css" href="<?php echo $cshout_config['url'],'themes/',$cshout_config['theme'],'/',$cshout_config['theme'] ?>.css" />
+<link rel="stylesheet" type="text/css" href="<?php echo $cshout_config['url'].'themes/'.$cshout_config['theme'].'/'.$cshout_config['theme'] ?>.css" />
 <script type="text/javascript" src="<?php echo $cshout_config['url'] ?>cshout.packed.js"></script>
 <?php }
 
