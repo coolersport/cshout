@@ -1,0 +1,27 @@
+--- CShout ---
+
+Change log:
+08/06/2009: - Upgrade to version 3 which requires javascript to operate
+            - Add theme feature. It is now much easier to customise.
+            - Easier to integrate with other framework/cms
+13/08/2006: - [fix] Encode broken vertical bar "|" if it appears in name or shout
+            - Add admin feature (delete unwanted shouts)
+            - Add search feature
+            - Change layout a little bit
+            - Add page switch and indicator
+25/09/2006: - Update to version 2.0
+            - Major changes made, applied AJAX technique, XML data transaction
+            - Credentials are encrypted by SHA1-Encryption (using sha1.js library)
+            - Add admin feature (check ip location)
+            - Expand search feature to search on any data (date, time, shouter, message, ip)
+            - Layout change, of course, due to ajax implementation
+            - Add help section
+            - Add some more emoticons (borrowed from Yahoo Messenger)
+            - Allow to switch between two layout styles
+28/09/2006: - Add installation.html
+01/10/2006: - Allow only admin to shout under his name
+            - Convert all strings into variables for easy translating
+	    - Better bad words filter
+	    - [fix] update emoticons contain vertical bar "|"
+24/11/2006  - [fix] remove newline and carriage return characters if they ever
+              appear in the message
