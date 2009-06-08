@@ -29,8 +29,8 @@ $cshout_jsconfig['layout_controls'] = ''; // any html code
 // eg: <div class="cs_formarea">{name}<br/>{message}<br/>{shout}{help}<br/>{show_smileys}{show_search}{show_login}{show_pages}{show_navigator}</div>{panel_smileys}{panel_search}{panel_login}{panel_pages}{panel_help}
 $cshout_jsconfig['width']           = '200px'; // shoutbox width
 $cshout_jsconfig['height']          = '500px'; // shoutbox height
-$cshout_jsconfig['script_url']             = (substr(strtolower($_SERVER['SERVER_PROTOCOL']),0,5)=='https'?'https':'http').'://'.$_SERVER['SERVER_NAME'].substr($_SERVER['SCRIPT_NAME'],0,strlen(basename($_SERVER['SCRIPT_NAME']))*-1) . '/cshout.php';
-$cshout_jsconfig['username']        = 'ano'; // pre-populated username
+$cshout_jsconfig['script_url']      = (substr(strtolower($_SERVER['SERVER_PROTOCOL']),0,5)=='https'?'https':'http').'://'.$_SERVER['SERVER_NAME'].substr($_SERVER['SCRIPT_NAME'],0,strlen(basename($_SERVER['SCRIPT_NAME']))*-1) . '/cshout.php';
+$cshout_jsconfig['username']        = ''; // pre-populated username
 $cshout_jsconfig['order']           = 'topdown';                     // bottomup: latest shout at bottom, topdown: latest shout on top
 
 /******* BACKEND CONFIG *******/
@@ -152,7 +152,7 @@ if ($cshout_config['theme'] && file_exists(dirname(__FILE__) . '/themes/' . $csh
 function cshout_includes() {
 	global $cshout_config;
 ?>
-<link rel="stylesheet" type="text/css" href="<?php echo $cshout_config['url'] ?>cshout.css" />
+<link rel="stylesheet" type="text/css" href="<?php echo $cshout_config['url'],'themes/',$cshout_config['theme'],'/',$cshout_config['theme'] ?>.css" />
 <script type="text/javascript" src="<?php echo $cshout_config['url'] ?>cshout.packed.js"></script>
 <?php }
 
