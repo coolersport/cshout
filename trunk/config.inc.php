@@ -36,8 +36,8 @@ $cshout_jsconfig['order']           = 'topdown';                     // bottomup
 /******* BACKEND CONFIG *******/
 if (!isset($cshout_config['theme'])) // check if theme has been set before
 $cshout_config['theme']           = 'default';
-$cshout_config['adminname']       = 'cool';                     // leave blank to disable admin login
-$cshout_config['adminpassword']   = '1q2w3e4r';                     // leave blank to disable admin login
+$cshout_config['adminname']       = '';                     // leave blank to disable admin login
+$cshout_config['adminpassword']   = '';                     // leave blank to disable admin login
 $cshout_config['maxtries']        = 6;                      // number of failed login allowed
 $cshout_config['failedbantime']   = 3600;                      // waiting time after $maxtries failed login (seconds)
 $cshout_config['yourtimezone']    = 10;                     // your timezone from -12 to +12
@@ -147,6 +147,8 @@ $cshout_config['datafilewarning'] = '';
 
 /******* BACKEND CONFIG ENDS - DO NOT MODIFY ANY FURTHER TO AVOID BREAKING STUFF *******/
 
+if (file_exists(dirname(__FILE__) . '/my.conf.php'))
+	include_once(dirname(__FILE__) . '/my.conf.php');
 if ($cshout_config['theme'] && file_exists(dirname(__FILE__) . '/themes/' . $cshout_config['theme'] . '/' . $cshout_config['theme'] . '.conf.php'))
 	include_once(dirname(__FILE__) . '/themes/' . $cshout_config['theme'] . '/' . $cshout_config['theme'] . '.conf.php');
 
