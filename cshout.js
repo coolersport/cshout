@@ -345,6 +345,7 @@ CShout.prototype.getPageContent = function(p) {
  * Process data loaded from the server
  */
 CShout.prototype.handleContent = function(xmldoc) {
+	if (!xmldoc || !xmldoc.documentElement) return;
 	try {
 		var ferror = xmldoc.documentElement.getElementsByTagName('fe'); // fatal
 		// error
@@ -423,7 +424,7 @@ CShout.prototype.getSmileys = function() {
 					null,
 					function(xmldoc) {
 						try {
-							if (!xmldoc)
+							if (!xmldoc || !xmldoc.documentElement)
 								return;
 							var xmlsmileys = xmldoc.documentElement
 									.getElementsByTagName('sm');
