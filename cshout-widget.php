@@ -11,7 +11,6 @@ Author URI: http://coolersport.info/
 function cshout_placeholder_setup()
 {
 	global $cshout_jsconfig, $cshout_config;
-	$cshout_config['theme'] = 'wp';
 	include_once('config.inc.php');
 	cshout_includes();
 	echo '<div id="cshout3"></div>';
