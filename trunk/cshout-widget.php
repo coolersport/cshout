@@ -27,6 +27,6 @@ function widget_cshout($args) {
 
 function cshout_init()
 {
-  register_sidebar_widget(__('CShout 2.1'), 'widget_cshout');
+  register_sidebar_widget(__('CShout 3'), 'widget_cshout');
 }
 add_action("plugins_loaded", "cshout_init");
