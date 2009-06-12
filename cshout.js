@@ -93,15 +93,15 @@ CShout.prototype.setup = function() {
 	html = html.replace('{shout}', txt);
 	txt = '<span id="cs_status"></span>';
 	html = html.replace('{status}', txt);
-	txt = '<input type="button" id="cs_help" title="Help" value="?" class="cs_buttons">';
+	txt = '<input type="button" id="cs_helppanel_show" title="Help" value="?" class="cs_buttons">';
 	html = html.replace('{help}', txt);
-	txt = '<input type="button" id="cs_show_smileys" title="Show smileys panel" value=":)" class="cs_buttons">';
+	txt = '<input type="button" id="cs_smileylist_show" title="Show smileys panel" value=":)" class="cs_buttons">';
 	html = html.replace('{show_smileys}', txt);
-	txt = '<input type="button" id="cs_show_search" title="Show search entry" value="S" class="cs_buttons">';
+	txt = '<input type="button" id="cs_searchquery_show" title="Show search entry" value="S" class="cs_buttons">';
 	html = html.replace('{show_search}', txt);
-	txt = '<input type="button" id="cs_show_login" title="Show administration login form" value="@" class="cs_buttons">';
+	txt = '<input type="button" id="cs_loginform_show" title="Show administration login form" value="@" class="cs_buttons">';
 	html = html.replace('{show_login}', txt);
-	txt = '<input type="button" id="cs_show_pages" title="Show pages navigation" value="P" class="cs_buttons">';
+	txt = '<input type="button" id="cs_pagenav_show" title="Show pages navigation" value="P" class="cs_buttons">';
 	html = html.replace('{show_pages}', txt);
 	txt = '<input type="button" id="cs_prev_page" title="Previous page" value="&lsaquo;" class="cs_buttons">';
 	txt += '<span id="cs_pageno">1</span>';
@@ -190,31 +190,31 @@ CShout.prototype.setupEvents = function() {
 			cshout.shoutIt()
 		};
 	}
-	comp = document.getElementById('cs_help');
+	comp = document.getElementById('cs_helppanel_show');
 	if (comp && !comp.onclick) {
 		comp.onclick = function() {
 			cshout.showPanel('cs_helppanel');
 		};
 	}
-	comp = document.getElementById('cs_show_smileys');
+	comp = document.getElementById('cs_smileylist_show');
 	if (comp && !comp.onclick) {
 		comp.onclick = function() {
 			cshout.showPanel('cs_smileylist');
 		};
 	}
-	comp = document.getElementById('cs_show_search');
+	comp = document.getElementById('cs_searchquery_show');
 	if (comp && !comp.onclick) {
 		comp.onclick = function() {
 			cshout.showPanel('cs_searchquery');
 		};
 	}
-	comp = document.getElementById('cs_show_login');
+	comp = document.getElementById('cs_loginform_show');
 	if (comp && !comp.onclick) {
 		comp.onclick = function() {
 			cshout.showPanel('cs_loginform');
 		};
 	}
-	comp = document.getElementById('cs_show_pages');
+	comp = document.getElementById('cs_pagenav_show');
 	if (comp && !comp.onclick) {
 		comp.onclick = function() {
 			cshout.showPanel('cs_pagenav');
@@ -285,24 +285,33 @@ CShout.prototype.addEvent = function(obj, event, func) {
  * Toggle panels
  */
 CShout.prototype.showPanel = function(id) {
-	var id = this.getElement(id);
-	if (id.style.display == 'block') {
-		id.style.display = 'none';
+	var panel = this.getElement(id);
+	if (panel.style.display == 'block') {
+		panel.style.display = 'none';
 	} else {
 		this.getElement('cs_smileylist').style.display = 'none';
 		this.getElement('cs_searchquery').style.display = 'none';
 		this.getElement('cs_loginform').style.display = 'none';
 		this.getElement('cs_pagenav').style.display = 'none';
 		this.getElement('cs_helppanel').style.display = 'none';
+
 		var cs_shouts = this.getElement('cs_shouts');
-		id.style.display = 'block';
-		id.style.position = 'absolute';
-		if (id.offsetHeight > cs_shouts.offsetHeight)
-			id.style.height = cs_shouts.offsetHeight + 'px';
-		if (id.offsetWidth > cs_shouts.offsetWidth)
-			id.style.width = cs_shouts.offsetWidth + 'px';
-		id.style.top = (cs_shouts.offsetTop + cs_shouts.offsetHeight - id.offsetHeight) + 'px';
-		id.style.left = cs_shouts.offsetLeft + 'px';
+		var control = this.getElement(id + '_show');
+
+		panel.style.display = 'block';
+		panel.style.position = 'absolute';
+		if (panel.offsetWidth > 300)
+			panel.style.width = '300px'; // default width to 300px
+		if (panel.offsetHeight > cs_shouts.offsetHeight) // the panel should not taller then the shouts
+			panel.style.height = cs_shouts.offsetHeight + 'px';
+		panel.style.left = control.offsetLeft + 'px';
+		if (cs_shouts.offsetTop < control.offsetTop) {
+			// show panel on top of the control
+			panel.style.top = control.offsetTop - panel.offsetHeight + 'px';
+		} else {
+			// show panel below the control
+			panel.style.top = control.offsetTop + control.offsetHeight + 'px';
+		}
 	}
 };
 
@@ -398,8 +407,9 @@ CShout.prototype.showProgress = function(status) {
 			cs_shoutit.value = status;
 	}
 
-	ids = [ 'cs_shoutit', 'cs_show_smileys', 'cs_show_search', 'cs_show_login',
-			'cs_show_pages', 'cs_prev_page', 'cs_next_page' ];
+	ids = [ 'cs_shoutit', 'cs_smileylist_show', 'cs_searchquery_show',
+			'cs_loginform_show', 'cs_pagenav_show', 'cs_prev_page',
+			'cs_next_page' ];
 	for (i = 0; i < ids.length; i++) {
 		this.getElement(ids[i]).disabled = disableit;
 	}
@@ -451,13 +461,12 @@ CShout.prototype.handleContent = function(xmldoc) {
 			for (i = 0; i < error.length; i++) {
 				html += '<div id="cs_error">' + error[i].childNodes[0].nodeValue + '</div>';
 			}
-			cshout.getElement('cs_show_login').style.color = cshout.adminColor[parseInt(info
+			cshout.getElement('cs_loginform_show').style.color = cshout.adminColor[parseInt(info
 					.getAttribute('islogged'))];
 			cshout.showLogin(parseInt(info.getAttribute('islogged')));
 			cshout.pages = parseInt(info.getAttribute('pages'));
 			cshout.getElement('cs_pageno').innerHTML = cshout.page;
-			(document.getElementById('cs_shout') || cshout.ef).value = '';
-			(document.getElementById('cs_shout') || cshout.ef).focus();
+			cshout.getElement('cs_shout').focus();
 			var shout_row = '';
 			for (i = 0; i < shouts.length; i++) {
 				k = shouts[i].getAttribute('k');
@@ -572,6 +581,7 @@ CShout.prototype.getSmileys = function() {
 CShout.prototype.shoutIt = function() {
 	cshout.showProgress('Shouting...');
 	var msg = this.getElement('cs_shout').value.replace(/\r|\n/g, '');
+	this.getElement('cs_shout').value = '';
 	this.ajaxcs.load('get', this.script_url + '?act=shout&name='
 			+ Escape(this.getElement('cs_name').value) + '&shout='
 			+ Escape(msg), null, this.handleContent);
@@ -604,7 +614,7 @@ CShout.prototype.doLogin = function() {
 						if (ferror.length > 0) {
 							if (ferror[0].childNodes[0].nodeValue == 'ok') {
 								cshout.getPageContent(cshout.page);
-								cshout.getElement('cs_show_login').style.color = cshout.adminColor[0];
+								cshout.getElement('cs_loginform_show').style.color = cshout.adminColor[0];
 								cshout.showPanel('cs_loginform');
 							} else {
 								alert(ferror[0].childNodes[0].nodeValue);
@@ -632,7 +642,7 @@ CShout.prototype.doLogout = function() {
 						if (ferror.length > 0) {
 							if (ferror[0].childNodes[0].nodeValue == 'ok') {
 								cshout.getPageContent(cshout.page);
-								cshout.getElement('cs_show_login').style.color = cshout.adminColor[1];
+								cshout.getElement('cs_loginform_show').style.color = cshout.adminColor[1];
 								cshout.showPanel('cs_loginform');
 							} else {
 								alert(ferror[0].childNodes[0].nodeValue);
@@ -670,8 +680,28 @@ CShout.prototype.checkIP = function(ip) {
 CShout.prototype.addSmiley = function(s) {
 	if (this.getElement('cs_shout').value == 'Message')
 		(document.getElementById('cs_shout') || this.dump).value = s;
-	else
-		(document.getElementById('cs_shout') || this.dump).value += s;
+	else {
+		var shout = document.getElementById('cs_shout');
+		if (!shout)
+			return;
+		var pos = shout.value.length;
+		if (shout.createTextRange) {
+			var r = document.selection.createRange().duplicate();
+			r.moveEnd('character', shout.value.length);
+			if (r.text != '')
+				pos = shout.value.lastIndexOf(r.text);
+		} else
+			pos = shout.selectionStart;
+		shout.value = shout.value.replace(new RegExp('(^.{' + pos + '})'), "$1"
+				+ s);
+		pos = pos + s.length;
+		if (shout.createTextRange) {
+			var r = shout.createTextRange();
+			r.move('character', pos);
+			r.select();
+		} else if (shout.selectionStart)
+			shout.setSelectionRange(pos, pos);
+	}
 };
 
 /*
