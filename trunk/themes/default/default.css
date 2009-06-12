@@ -25,11 +25,8 @@ text-align: center;
 }
 
 /* Formation of Shouts Area */
-.cs_shouts {
-margin: 0;
-padding: 0;
-/*line-height: 100%;*/
-}
+#cs_shouts {margin:0;padding:0;height:300px;overflow-x:hidden;overflow-y:auto}
+
 /* Formation of Buttons */
 .cs_buttons {
 background: #DDDDDD;
