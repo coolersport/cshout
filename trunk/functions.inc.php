@@ -182,7 +182,7 @@ function cshout_save_shout() {
 		showError($cshout_config['error_cantshout']);
 	} else if(time()-$cshout_config['lasttime']<$cshout_config['delayshout']) {
 		// flooding control here
-		showError($cshout_config['error_wait']);
+		showError(str_replace('{#}', $cshout_config['delayshout'], $cshout_config['error_wait']));
 	} else if(containsRestrictedWords($_GET['shout'])) {
 		showError($cshout_config['restrictedmsg']);
 	} else {
@@ -193,9 +193,9 @@ function cshout_save_shout() {
 		$shout = str_replace("\r", '', $shout);
 		$shout = str_replace("\n", '', $shout);
 		$shout = substr($shout, 0, $cshout_config['shoutlen']);
-		if(!$name || $name=='' || $name=='Name') showError($cshout_config['error_noname']);
+		if(!$name || $name=='' || strtolower($name)=='name') showError($cshout_config['error_noname']);
 		elseif(!$cshout_config['isAdmin'] && strcasecmp($name, $cshout_config['adminname'])==0) showError($cshout_config['error_namereserved']);
-		elseif(!$shout || $shout=='' || strcasecmp(trim($shout), 'Message') == 0) showError($cshout_config['error_noshout']);
+		elseif(trim($shout)=='' || strtolower($shout)=='message') showError($cshout_config['error_noshout']);
 		// Good, now the essentials are taken care of!
 		// Let's make the name display a link if there is a site specified.
 		else {
@@ -265,6 +265,14 @@ function cshout_main() {
 	else
 	array_walk ($cshout_config['smileys'], 'alter_smiley', $cshout_config['url'].$cshout_config['smileydir']);
 
+	$countmin = $cshout_config['shoutsperpage']*($page-1);
+	$countmax = $cshout_config['shoutsperpage']*$page - 1;
+	if ($countmax > $totalshouts) $countmax = $totalshouts;
+
+	if (!empty($_GET['lk']) && $_GET['lk'] == md5($shouts[$totalshouts])) {
+		showError('uc'); // unchanged code
+	}
+
 	// invert order of the shouts, last shout will go first
 	arsort($shouts);
 
@@ -287,9 +295,9 @@ function cshout_main() {
                '<a href="\\0" target="_blank">\\0</a>');
 
 	$delbutton = '';
-	echo '<cshout><info islogged="'.($cshout_config['isAdmin']?1:0).'" pages="'.$pages.'" />'.$cshout_config['datafilewarning'];
 	if ($_GET['act']=='search') {
 		$q = $_GET['q'];
+		echo '<cshout><info islogged="'.($cshout_config['isAdmin']?1:0).'" pages="'.$pages.'" />'.$cshout_config['datafilewarning'];
 		if($q!='' && $q!=$cshout_config['str_searchfor']) {
 			$q = preg_replace_callback('/%u[0-9A-F]{4}/', 'convertChars', $q);
 			$found = 0;
@@ -322,18 +330,8 @@ function cshout_main() {
 		}
 	}
 
-	$countdir = $cshout_jsconfig['order'] == 'topdown' ? 1 : -1;
-	$countmin = $cshout_config['shoutsperpage']*($page-1);
-	$countmax = $cshout_config['shoutsperpage']*$page - 1;
-	if ($countmax > $totalshouts) $countmax = $totalshouts;
-	if ($countdir == 1) {
-		$countstart = $countmin;
-	} else {
-		$countstart = $countmax;
-	}
-
-	for ($count = $countstart; true; $count+=$countdir) {
-		if ($count < $countmin || $count > $countmax) break;
+	echo '<cshout><info islogged="'.($cshout_config['isAdmin']?1:0).'" pages="'.$pages.'" />'.$cshout_config['datafilewarning'];
+	for ($count = $countmin; $count <= $countmax; $count++) {
 		list($auth,$date,$time,$ipaddr,$shout) = explode(' | ', $shouts[$totalshouts-$count]);
 		$shout = strip_tags($shout);
 		$shout = stripslashes($shout);

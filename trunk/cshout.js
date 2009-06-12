@@ -27,8 +27,9 @@ function CShout() {
 	this.username = '';
 	this.width = '100%';
 	this.height = '400px';
-	this.layout = '{controls}<div style="height:300px;overflow:scroll">{shouts}</div>';
-	this.layout_controls = '<div class="cs_formarea"><div>{name}</div><div>{message}</div>{shout}{help}<br/>{show_smileys}{show_search}{show_login}{show_pages}{show_navigator}</div>{panel_smileys}{panel_search}{panel_login}{panel_pages}{panel_help}';
+	this.layout = '{controls}{shouts}';
+	this.layout_controls = '<div class="cs_formarea"><div>{name}</div><div>{message}</div>{shout}{help}<br/>{show_smileys}{show_search}{show_login}{show_pages}{show_navigator}{toggle_autorefresh}</div>{panel_smileys}{panel_search}{panel_login}{panel_pages}{panel_help}';
+	this.shout_template = '<div class="cs_shouter" title="{shouter_full}">{cs_delete}{cs_checkip}{shouter}<a href="#" onclick="alert(\'Shouter: {shouter_full}\\nWhen: {time} {date}\\nFrom IP: {ip}\');return(false)">on {date_short} at {time_short}</a></div><div class="cs_row{row_index}" title="{time} {date} {ip}">{shout}</div>';
 	this.placeholder = 'cshout3';
 	this.order = 'topdown';
 	this.shouterlength = 12;
@@ -45,6 +46,9 @@ function CShout() {
 	this.pages = 1;
 	this.smileys = null;
 	this.ajaxcs = ajaxCS.createInstance();
+	this.status = null;
+	this.autorefresh = null;
+	this.lastKey = null;
 	this.ef = {
 		value : '',
 		disabled : '',
@@ -53,11 +57,19 @@ function CShout() {
 		},
 		style : {
 			display : '',
-			color : ''
+			color : '',
+			position : '',
+			top : '',
+			left : '',
+			width : '',
+			height : ''
 		},
-		parentNode : {
-			scrollTop : 0
-		}
+		offsetHeight : 0,
+		offsetWidth : 0,
+		offsetTop : 0,
+		offsetLeft : 0,
+		scrollTop : 0,
+		className : ''
 	};
 	this.dump = {
 		value : ''
@@ -79,6 +91,8 @@ CShout.prototype.setup = function() {
 	html = html.replace('{message}', txt);
 	txt = '<input type="button" id="cs_shoutit" title="Send message" value=".: Send :." class="cs_buttons">';
 	html = html.replace('{shout}', txt);
+	txt = '<span id="cs_status"></span>';
+	html = html.replace('{status}', txt);
 	txt = '<input type="button" id="cs_help" title="Help" value="?" class="cs_buttons">';
 	html = html.replace('{help}', txt);
 	txt = '<input type="button" id="cs_show_smileys" title="Show smileys panel" value=":)" class="cs_buttons">';
@@ -93,6 +107,8 @@ CShout.prototype.setup = function() {
 	txt += '<span id="cs_pageno">1</span>';
 	txt += '<input type="button" id="cs_next_page" title="Next page" value="&rsaquo;" class="cs_buttons">';
 	html = html.replace('{show_navigator}', txt);
+	txt = '<input type="checkbox" id="cs_autorefresh" title="Toggle auto refresh" value="0"><label for="cs_autorefresh" id="cs_autorefresh_label">auto refresh</label>';
+	html = html.replace('{toggle_autorefresh}', txt);
 
 	txt = '<div id="cs_smileylist" class="cs_panel"></div>';
 	html = html.replace('{panel_smileys}', txt);
@@ -101,13 +117,13 @@ CShout.prototype.setup = function() {
 	html = html.replace('{panel_search}', txt);
 	txt = '<div id="cs_loginform" class="cs_panel">';
 	txt += '<input type="text" id="u" name="u" size="3" value="name" title="Username" class="cs_inputs" onfocus="if(this.value==\'name\') this.value=\'\';" onblur="if(this.value==\'\') this.value=\'name\';">';
-	txt += '<input type="password" id="p" name="p" size="3" value="pass" title="Password" class="cs_inputs" onfocus="if(this.value==\'pass\') this.value=\'\';" onblur="if(this.value==\'\') this.value=\'pass\';" onkeydown="if(event.keyCode==13) cshout.doLogin();">';
+	txt += '<input type="password" id="p" name="p" size="3" value="pass" title="Password" class="cs_inputs" onfocus="if(this.value==\'pass\') this.value=\'\';" onblur="if(this.value==\'\') this.value=\'pass\';" onkeydown="if (window.event) event = window.event;if(event.keyCode==13) cshout.doLogin();">';
 	txt += '<input type="button" id="cs_login" name="login" title="Login" value="OK" class="cs_buttons">';
 	txt += '<input type="button" id="cs_logout" name="logout" title="Logout" value="Logout" class="cs_buttons" style="display:none">';
 	txt += '</div>';
 
 	html = html.replace('{panel_login}', txt);
-	txt = '<div id="cs_pagenav" style="display:none;"></div>';
+	txt = '<div id="cs_pagenav" class="cs_panel" style="display:none;"></div>';
 	html = html.replace('{panel_pages}', txt);
 	txt = '<div id="cs_helppanel" class="cs_panel" style="text-align:left;">';
 	txt += '<div id="cs_helpcaption">Make a shout</div>';
@@ -126,109 +142,167 @@ CShout.prototype.setup = function() {
 CShout.prototype.setupEvents = function() {
 	var comp = document.getElementById('cs_name');
 	if (comp) {
-		comp.onkeydown = function(event) {
-			if (event.keyCode == 13)
-				this.getElement('cs_shout').focus();
-		};
-		comp.onfocus = function() {
-			if (this.value == 'Name')
-				this.value = '';
-		};
-		comp.onblur = function() {
-			if (this.value == '')
-				this.value = 'Name';
-		};
+		if (!comp.onkeydown)
+			comp.onkeydown = function(e) {
+				if (!e)
+					var e = window.event;
+				if (e.keyCode == 13) {
+					cshout.getElement('cs_shout').focus();
+					return false;
+				}
+			};
+		if (!comp.onfocus)
+			comp.onfocus = function() {
+				if (this.value == 'Name')
+					this.value = '';
+			};
+		if (!comp.onblur)
+			comp.onblur = function() {
+				if (this.value == '')
+					this.value = 'Name';
+			};
 	}
 	comp = document.getElementById('cs_shout');
 	if (comp) {
-		comp.onkeydown = function(event) {
-			if (event.keyCode == 13)
-				cshout.shoutIt();
-		};
-		comp.onfocus = function() {
-			if (this.value == 'Message')
-				this.value = '';
-		};
-		comp.onblur = function() {
-			if (this.value == '')
-				this.value = 'Message';
-		};
+		if (!comp.onkeydown)
+			comp.onkeydown = function(e) {
+				if (!e)
+					var e = window.event;
+				if (e.keyCode == 13) {
+					cshout.shoutIt();
+					return false;
+				}
+			};
+		if (!comp.onfocus)
+			comp.onfocus = function() {
+				if (this.value == 'Message')
+					this.value = '';
+			};
+		if (!comp.onblur)
+			comp.onblur = function() {
+				if (this.value == '')
+					this.value = 'Message';
+			};
 	}
 	comp = document.getElementById('cs_shoutit');
-	if (comp) {
+	if (comp && !comp.onclick) {
 		comp.onclick = function() {
 			cshout.shoutIt()
 		};
 	}
 	comp = document.getElementById('cs_help');
-	if (comp) {
+	if (comp && !comp.onclick) {
 		comp.onclick = function() {
 			cshout.showPanel('cs_helppanel');
 		};
 	}
 	comp = document.getElementById('cs_show_smileys');
-	if (comp) {
+	if (comp && !comp.onclick) {
 		comp.onclick = function() {
 			cshout.showPanel('cs_smileylist');
 		};
 	}
 	comp = document.getElementById('cs_show_search');
-	if (comp) {
+	if (comp && !comp.onclick) {
 		comp.onclick = function() {
 			cshout.showPanel('cs_searchquery');
 		};
 	}
 	comp = document.getElementById('cs_show_login');
-	if (comp) {
+	if (comp && !comp.onclick) {
 		comp.onclick = function() {
 			cshout.showPanel('cs_loginform');
 		};
 	}
 	comp = document.getElementById('cs_show_pages');
-	if (comp) {
+	if (comp && !comp.onclick) {
 		comp.onclick = function() {
 			cshout.showPanel('cs_pagenav');
 		};
 	}
 	comp = document.getElementById('cs_prev_page');
-	if (comp) {
+	if (comp && !comp.onclick) {
 		comp.onclick = function() {
 			cshout.getPageContent('prev');
 		};
 	}
 	comp = document.getElementById('cs_next_page');
-	if (comp) {
+	if (comp && !comp.onclick) {
 		comp.onclick = function() {
 			cshout.getPageContent('next');
 		};
 	}
-	comp = document.getElementById('cs_login');
+	comp = document.getElementById('cs_autorefresh');
 	if (comp) {
+		cshout.getElement('cs_autorefresh_label').className = comp.checked == '' ? 'cs_dimmed'
+				: '';
+		if (!comp.onclick)
+			comp.onclick = function() {
+				cshout.getElement('cs_autorefresh_label').className = this.checked == '' ? 'cs_dimmed'
+						: '';
+				cshout.executeRefresh();
+			};
+	}
+	comp = document.getElementById('cs_login');
+	if (comp && !comp.onclick) {
 		comp.onclick = function() {
-			cshout.doLogin()
+			cshout.doLogin();
 		};
 	}
 	comp = document.getElementById('cs_logout');
-	if (comp) {
+	if (comp && !comp.onclick) {
 		comp.onclick = function() {
-			cshout.doLogout()
+			cshout.doLogout();
 		};
 	}
+};
+
+CShout.prototype.executeRefresh = function() {
+	var comp = document.getElementById('cs_autorefresh');
+	if (!comp)
+		return;
+	if (comp.checked == '') { // turn off
+		if (this.autorefresh) {
+			clearTimeout(this.autorefresh);
+			this.autorefresh = null;
+		}
+	} else { // turn on
+		if (this.autorefresh) {
+			cshout.getPageContent('refresh');
+		}
+		this.autorefresh = setTimeout('cshout.executeRefresh()', 5000);
+	}
+};
+
+CShout.prototype.addEvent = function(obj, event, func) {
+	if (obj.addEventListener)
+		obj.addEventListener(event, func, false);
+	else if (obj.attachEvent)
+		obj.attachEvent('on' + event, func);
 };
 
 /*
  * Toggle panels
  */
 CShout.prototype.showPanel = function(id) {
-	if (this.getElement(id).style.display == 'block') {
-		this.getElement(id).style.display = 'none';
+	var id = this.getElement(id);
+	if (id.style.display == 'block') {
+		id.style.display = 'none';
 	} else {
 		this.getElement('cs_smileylist').style.display = 'none';
 		this.getElement('cs_searchquery').style.display = 'none';
 		this.getElement('cs_loginform').style.display = 'none';
 		this.getElement('cs_pagenav').style.display = 'none';
 		this.getElement('cs_helppanel').style.display = 'none';
-		this.getElement(id).style.display = 'block';
+		var cs_shouts = this.getElement('cs_shouts');
+		id.style.display = 'block';
+		id.style.position = 'absolute';
+		if (id.offsetHeight > cs_shouts.offsetHeight)
+			id.style.height = cs_shouts.offsetHeight + 'px';
+		if (id.offsetWidth > cs_shouts.offsetWidth)
+			id.style.width = cs_shouts.offsetWidth + 'px';
+		id.style.top = (cs_shouts.offsetTop + cs_shouts.offsetHeight - id.offsetHeight) + 'px';
+		id.style.left = cs_shouts.offsetLeft + 'px';
 	}
 };
 
@@ -256,9 +330,9 @@ CShout.prototype.show = function() {
 	var cshout_ph = this.getElement(this.placeholder);
 	if (this.ajaxcs.httpObj) {
 		cshout_ph.innerHTML = this.setup();
+		this.setupEvents();
 		this.getSmileys();
 		this.getPageContent(1);
-		this.setupEvents();
 		this.instance++;
 	} else {
 		cshout_ph.innerHTML = 'Your browser doesn\t support Ajax';
@@ -303,16 +377,27 @@ CShout.prototype.isNumeric = function(val) {
 CShout.prototype.showProgress = function(status) {
 	var disableit = false;
 	var cs_shoutit = document.getElementById('cs_shoutit');
+	var cs_status = document.getElementById('cs_status');
 	if (!cs_shoutit)
 		return;
-	if (status) {
-		cs_shoutit.value = status;
-		cs_shoutit.style.color = this.buttonColor[1];
-		disableit = true;
-	} else {
-		cs_shoutit.value = '.: Send :.';
-		cs_shoutit.style.color = this.buttonColor[0];
+	if (!this.status)
+		this.status = cs_shoutit.nodeName.toLowerCase() == 'button' ? cs_shoutit.innerHTML
+				: cs_shoutit.value;
+
+	cs_shoutit.style.color = this.buttonColor[status ? 1 : 0];
+	var disableit = status ? true : false;
+	if (cs_status)
+		cs_status.innerHTML = status ? status : '';
+	else {
+		if (!status)
+			status = this.status;
+		if (cs_shoutit.nodeName.toLowerCase() == 'button')
+			cs_shoutit.innerHTML = status; // if the send button is a button
+		// tag
+		else
+			cs_shoutit.value = status;
 	}
+
 	ids = [ 'cs_shoutit', 'cs_show_smileys', 'cs_show_search', 'cs_show_login',
 			'cs_show_pages', 'cs_prev_page', 'cs_next_page' ];
 	for (i = 0; i < ids.length; i++) {
@@ -326,6 +411,8 @@ CShout.prototype.showProgress = function(status) {
 CShout.prototype.getPageContent = function(p) {
 	if (this.isNumeric(p)) {
 		this.page = p;
+	} else if (p == 'refresh') {
+		this.page = 1; // always refresh to page 1
 	} else if (p == 'prev') {
 		this.page--;
 	} else {
@@ -336,16 +423,19 @@ CShout.prototype.getPageContent = function(p) {
 	} else if (this.page > this.pages) {
 		this.page = this.pages;
 	}
-	this.showProgress('Loading...');
-	this.ajaxcs.load('get', this.script_url + '?page=' + this.page, null,
-			this.handleContent);
+	if (p != 'refresh')
+		this.showProgress('Loading...');
+	this.ajaxcs.load('get', this.script_url + '?page=' + this.page
+			+ ((p == 'refresh' && this.lastKey) ? '&lk=' + this.lastKey : ''),
+			null, this.handleContent);
 };
 
 /*
  * Process data loaded from the server
  */
 CShout.prototype.handleContent = function(xmldoc) {
-	if (!xmldoc || !xmldoc.documentElement) return;
+	if (!xmldoc || !xmldoc.documentElement)
+		return;
 	try {
 		var ferror = xmldoc.documentElement.getElementsByTagName('fe'); // fatal
 		// error
@@ -366,44 +456,61 @@ CShout.prototype.handleContent = function(xmldoc) {
 			cshout.showLogin(parseInt(info.getAttribute('islogged')));
 			cshout.pages = parseInt(info.getAttribute('pages'));
 			cshout.getElement('cs_pageno').innerHTML = cshout.page;
-			(document.getElementById('cs_shout') || this.dump).value = 'Message';
+			(document.getElementById('cs_shout') || cshout.ef).value = '';
+			(document.getElementById('cs_shout') || cshout.ef).focus();
+			var shout_row = '';
 			for (i = 0; i < shouts.length; i++) {
 				k = shouts[i].getAttribute('k');
+				if (i == 0)
+					cshout.lastKey = k;
 				n = shouts[i].getAttribute('n');
 				d = shouts[i].getAttribute('d');
 				t = shouts[i].getAttribute('t');
 				ip = shouts[i].getAttribute('ip');
 				s = shouts[i].childNodes[0].nodeValue;
 				if (isadmin)
-					buttons = '<a class="cs_delete" href="" onclick="cshout.deleteIt(\''
-							+ k
-							+ '\');return(false);" title="Delete this shout">x</a><a class="cs_delete" href="" onclick="cshout.checkIP(\''
-							+ ip
-							+ '\');return(false);" title="Check ip location">ip</a>';
-				if (n.length > cshout.shouterlength)
-					html += '<div class="cs_shouter" title="' + n + '">'
-							+ buttons
-							+ n.substring(0, cshout.shouterlength - 3)
-							+ '&hellip;';
+					shout_row = cshout.shout_template
+							.replace(
+									/{cs_delete}/g,
+									'<a class="cs_delete" href="" onclick="cshout.deleteIt(\'' + k + '\');return(false);" title="Delete this shout">x</a>')
+							.replace(
+									/{cs_checkip}/g,
+									'<a class="cs_delete" href="" onclick="cshout.checkIP(\'' + ip + '\');return(false);" title="Check ip location">ip</a>');
 				else
-					html += '<div class="cs_shouter">' + buttons + n;
-				html += '<a href="#" onclick="alert(\'Shouter: ' + n.unquote()
-						+ '\\nWhen: ' + t + ' ' + d + '\\nFrom IP: ' + ip
-						+ '\');return(false)">on ' + d.substring(0, 5) + ' at '
-						+ t.substring(0, 5) + '</a></div>';
-				html += '<div class="cs_row' + rowidx + '" title="' + t + ' '
-						+ d + ' ' + ip + '">' + s + '</div>';
+					shout_row = cshout.shout_template.replace(/{cs_delete}/g,
+							'').replace(/{cs_checkip}/g, '');
+				shout_row = shout_row.replace(/{shouter_full}/g, n);
+				if (n.length > cshout.shouterlength)
+					shout_row = shout_row.replace(/{shouter}/g, n.substring(0,
+							cshout.shouterlength - 3) + '&hellip;');
+				else
+					shout_row = shout_row.replace(/{shouter}/g, n);
+				shout_row = shout_row.replace(/{date}/g, d).replace(
+						/{date_short}/g, d.substring(0, 5));
+				shout_row = shout_row.replace(/{time}/g, t).replace(
+						/{time_short}/g, t.substring(0, 5));
+				shout_row = shout_row.replace(/{row_index}/g, rowidx).replace(
+						/{ip}/g, ip).replace(/{shout}/g, s);
+				if (cshout.order == 'topdown')
+					html += shout_row;
+				else
+					html = shout_row + html;
 				rowidx = (rowidx == 0) ? 1 : 0;
 			}
 			var shouts_div = cshout.getElement('cs_shouts');
 			shouts_div.innerHTML = html;
 			if (cshout.order == 'topdown')
-				shouts_div.parentNode.scrollTop = 0;
+				shouts_div.scrollTop = 0;
 			else
-				shouts_div.parentNode.scrollTop = 99999;
+				shouts_div.scrollTop = 99999;
 			cshout.updatePages();
 		} else {
-			alert(ferror[0].childNodes[0].nodeValue);
+			//			(document.getElementById('cs_shout') || cshout.dump).value = (document
+			//					.getElementById('cs_shout') || cshout.dump).value.replace(
+			//					/\r|\n/g, '');
+			var error = ferror[0].childNodes[0].nodeValue;
+			if ((error || '').length > 0 && error != 'uc')
+				alert(error);
 		}
 		cshout.showProgress();
 	} catch (e) {
@@ -464,10 +571,10 @@ CShout.prototype.getSmileys = function() {
  */
 CShout.prototype.shoutIt = function() {
 	cshout.showProgress('Shouting...');
+	var msg = this.getElement('cs_shout').value.replace(/\r|\n/g, '');
 	this.ajaxcs.load('get', this.script_url + '?act=shout&name='
 			+ Escape(this.getElement('cs_name').value) + '&shout='
-			+ Escape(this.getElement('cs_shout').value), null,
-			this.handleContent);
+			+ Escape(msg), null, this.handleContent);
 };
 
 /*

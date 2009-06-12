@@ -49,7 +49,7 @@ $cshout_config['delayshout']      = 15;                     // number of seconds
 // error messages
 $cshout_config['error_noname']    = 'You need to input a name!';
 $cshout_config['error_noshout']   = 'Slacker! Say something mate.';
-$cshout_config['error_wait']      = 'Please wait for '.$cshout_config['delayshout'].' seconds between your shouts.';
+$cshout_config['error_wait']      = 'Please wait for {#} seconds between your shouts.';
 $cshout_config['error_cantshout'] = 'You cannot shout at the moment. This shoutbox is readonly.';
 $cshout_config['error_cantdelete']= 'You cannot delete shout. This shoutbox is readonly.';
 $cshout_config['error_namereserved'] = 'You cannot use this name as it is reserved.';
