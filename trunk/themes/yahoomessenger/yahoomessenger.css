@@ -1,0 +1,142 @@
+/* Default font for all elements */
+.cs_shoutbox div, .cs_shoutbox span, .cs_shoutbox a, .cs_shoutbox td {
+font-family: Tahoma, Arial, Verdana, Times, sans-serif;
+font-size: 8pt;
+}
+/* Formation of The Shoutbox */
+.cs_shoutbox {
+border: 1px solid #415274;
+margin: 0;
+padding: 0;
+font-size: 8pt;
+background-color: #EBEDF6;
+overflow-x: hidden;
+}
+
+/* Formation of Control Panel Area */
+.cs_formarea {border:0;color:#415274;font-size:8pt;margin:0;padding:0;font-family: Tahoma, Arial, Verdana, Times, sans-serif}
+
+/* Formation of Shouts Area */
+#cs_shouts{border:1px solid #eee;margin:0;padding:2px;overflow-x:hidden;overflow-y:auto;height:300px;font-size:8pt;font-family: Tahoma, Arial, Verdana, Times, sans-serif}
+#cs_shouts div{margin:2px 0}
+
+/* Formation of Buttons */
+.cs_buttons {background:#eee;border: 1px solid #ddd;color:#415274;font-family: Tahoma, Arial, Verdana, Times, sans-serif;font-size:7pt;font-weight:bold;padding:1px;margin-left:1px;margin-top:1px}
+.cs_buttons:hover {border: 1px inset #ddd;}
+
+/* Formation of Textboxes */
+.cs_inputs {border:1px solid #999;color:#415274;font-family:Tahoma, Arial, Verdana, Times, sans-serif;font-size:8pt;padding:1px 2px;outline:none;background:none}
+
+/* Formation of Shouter's name */
+.cs_shouter {
+color: #FFFFFF;
+background-color: #6A80AC;
+font-weight: bold;
+font-size:7pt;
+white-space: nowrap;
+padding: 1px 4px 1px 2px;
+}
+.cs_shouter a{
+font-weight:normal;
+padding-left:3px;
+font-size:7pt;
+color:#fff;
+text-decoration:none;
+}
+/* Formation of Delete button */
+.cs_delete {
+text-decoration: none;
+background-color: #F6FAF9;
+color: #B00 !important;
+font-size: 7pt;
+font-weight: bold;
+padding: 0px 1px 0px 2px;
+margin: 0px 2px 0px 0px;
+border-style: 1px none #C0C0C0;
+line-height: 60%;
+}
+/* Formation of Page Navigation Panel */
+#cs_pagenav {
+display: none;
+background-color: #EBEDF6;
+border-top: 1px solid #415274;
+padding: 2px 1px 2px 1px;
+text-align: center;
+font-size: 8pt;
+}
+/* Formation of normal page numbers in the Page Navigation Panel */
+#cs_pagenav a {
+text-decoration: none;
+color: #415274;
+font-size: 7pt;
+font-weight: bold;
+}
+/* Formation of current page number in the Page Navigation Panel */
+#cs_pagenav span {
+text-decoration: none;
+color: #AA0000;
+font-size: 7pt;
+font-weight: bold;
+background-color: #FFDEAD;
+padding-left: 2px;
+padding-right: 2px;
+border: 1px outset #DE5E5E;
+}
+/* Formation of Panel */
+.cs_panel {display:none;background-color:#eee;border:0px solid #ddd;padding:0px}
+.cs_panel table,.cs_panel table th,.cs_panel table td{border:0;margin:0;padding:0}
+
+/* Formation of even shout row */
+.cs_row0 {
+color: #415274;
+background-color: #CED5E4;
+border-top: 1px solid #415274;
+padding: 3px 2px 3px 2px;
+}
+/* Formation of odd shout row */
+.cs_row1 {
+color: #415274;
+background-color: #EBEDF6;
+border-top: 1px solid #415274;
+padding: 3px 2px 3px 2px;
+}
+/* Formation of Current Page Number */
+#cs_pageno {color: #415274;font-size: 8pt;font-weight:bold;padding-left:3px;padding-right:3px;margin-left:1px;margin-top:1px;border:0px inset #eee}
+
+/* Formation of Error Message */
+#cs_error {
+text-decoration: none;
+background-color: #F6FAF9;
+color: #AA0000;
+border-top: 1px solid #415274;
+}
+/* Formation of smiley image */
+.cs_smiley {
+background-position: center;
+background-repeat: no-repeat;
+position: relative;
+float: left;
+width: 24px;
+height: 18px;
+overflow: hidden;
+}
+#cs_helpcaption {
+font-size: 7pt;
+font-weight: bold;
+color: #FFFFFF;
+background-color: #002F00;
+}
+#cs_helptext {
+font-size: 7pt;
+color: #415274;
+padding-bottom: 3px;
+}
+#cshout_entry,#cshout_entry:hover{border-collapse:collapse;margin:0;width:100%;border:1px solid #999}
+#cshout_entry tr,#cshout_entry tr:hover{border:0;margin:0;background:none;padding:0}
+#cshout_entry td,#cshout_entry td:hover{border:0;margin:0;background:none;padding:1px 3px 1px 5px;vertical-align:top}
+#cs_shout{width:100%;border:0;background:none;outline:none;color:#415274;font-family: Tahoma, Arial, Verdana, Times, sans-serif;font-size:8pt;padding:0}
+#cs_shoutit{padding:4px}
+#cs_autorefresh{vertical-align:middle;left:-9999px;position:absolute;}
+#cs_autorefresh_label{margin-left:3px;color:#415274;font-family: Tahoma, Arial, Verdana, Times, sans-serif;font-size:7pt;}
+#cs_autorefresh_label.cs_dimmed{color:#aaa}
+
