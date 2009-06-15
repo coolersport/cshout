@@ -25,6 +25,12 @@
 /************** DO NOT MODIFY CODE BELOW THIS LINE *******************/
 /************** UNLESS YOU KNOW WHAT YOU ARE DOING *******************/
 
+// fix up global variables
+$postKeys = array('act', 'u', 'p');
+$getKeys = array('act', 'name', 'shout', 'k', 'lk', 'q');
+foreach($postKeys as $key) if (!isset($_POST[$key])) $_POST[$key] = '';
+foreach($getKeys as $key) if (!isset($_GET[$key])) $_GET[$key] = '';
+
 function show_smiley($item1, $key, $prefix) {
 	echo '<sm t="'.htmlspecialchars($key, ENT_QUOTES).'" s="'.htmlspecialchars($prefix.$item1, ENT_QUOTES).'" />';
 }
