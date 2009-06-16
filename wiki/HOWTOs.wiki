@@ -1,0 +1,29 @@
+#summary Everything you would like to do with CShout is answered here.
+
+= HOW-TOs =
+
+  # How to change some configuration?
+Just go ahead and change whatever value preset in config.inc.php. However, if you are afraid of breaking the code or want to preserve its default values for future references, you can add all your custom code into my.conf.php. If the file exists, CShout will pick it up and overwrite the default configurations. The following example shows how to change default theme to yahoomessenger theme.
+{{{
+<?php
+// config.inc.php
+...
+$cshout_config['theme'] = 'default';
+...
+?>
+
+<?php
+// my.conf.php
+$cshout_config['theme'] = 'yahoomessenger';
+?>
+}}}
+
+  # How to make use of forum/CMS members' usernames for the shoutbox?
+
+This is useful when you don't want anonymous shouter on your shoutbox. Users must log in to shout and take responsibility for what they say. First you need to let CShout know the username to be used as following.
+
+{{{
+// the following can be changed in config.inc.php or added into my.conf.php if you don't want to
+// replace getLoggedUsername() function call with the one that provided by your forum/CMS framework
+$cshout_jsconfig['username'] = getLoggedUsername();
+}}}
