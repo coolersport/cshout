@@ -31,3 +31,7 @@ $cshout_jsconfig['username'] = getLoggedUsername();
 If the username is NOT empty, CShout will use it as shouter name regardless of what they put in the Name text field. It is recommended to remove the text field if this is applied. To remove the name input field, you can either:
   * remove the placeholder `{name}` in `$cshout_jsconfig['layout']` or `$cshout_jsconfig['layout_controls']` (view yahoomessenger theme for examples)
   * or hide it using css `#cs_name{display:none}`
+
+== How to force auto-refresh always on? ==
+
+Replace placeholder `{toggle_autorefresh}` with `<input type="checkbox" id="cs_autorefresh" title="Toggle chat mode" value="0" checked style="display:none">` in `$cshout_jsconfig['layout']` or `$cshout_jsconfig['layout_controls']` (view yahoomessenger theme for examples)
