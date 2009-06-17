@@ -34,4 +34,4 @@ If the username is NOT empty, CShout will use it as shouter name regardless of w
 
 == How to force auto-refresh always on? ==
 
-Replace placeholder `{toggle_autorefresh}` with `<input type="checkbox" id="cs_autorefresh" title="Toggle chat mode" value="0" checked style="display:none">` in `$cshout_jsconfig['layout']` or `$cshout_jsconfig['layout_controls']` (view yahoomessenger theme for examples)
+Replace placeholder `{toggle_autorefresh}` with `<input type="checkbox" id="cs_autorefresh" checked style="display:none">` in `$cshout_jsconfig['layout']` or `$cshout_jsconfig['layout_controls']` (view yahoomessenger theme for examples)
