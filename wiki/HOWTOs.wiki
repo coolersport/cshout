@@ -1,6 +1,6 @@
 #summary Everything you would like to do with CShout is answered here.
 
-== How to change some configuration? ==
+=== How to change some configuration? ===
 Just go ahead and change whatever value preset in config.inc.php. However, if you are afraid of breaking the code or want to preserve its default values for future references, you can add all your custom code into my.conf.php. If the file exists, CShout will pick it up and overwrite the default configurations. The following example shows how to change default theme to yahoomessenger theme.
 {{{
 <?php
@@ -16,7 +16,7 @@ $cshout_config['theme'] = 'yahoomessenger';
 ?>
 }}}
 
-== How to make use of forum/CMS members' usernames for the shoutbox? ==
+=== How to make use of forum/CMS members' usernames for the shoutbox? ===
 
 This is useful when you don't want anonymous shouter on your shoutbox. Users must log in to shout and take responsibility for what they say. First you need to let CShout know the username to be used as following.
 
@@ -30,6 +30,6 @@ If the username is NOT empty, CShout will use it as shouter name regardless of w
   * remove the placeholder `{name}` in `$cshout_jsconfig['layout']` or `$cshout_jsconfig['layout_controls']` (view yahoomessenger theme for examples)
   * or hide it using css `#cs_name{display:none}`
 
-== How to force auto-refresh always on? ==
+=== How to force auto-refresh always on? ===
 
 Replace placeholder `{toggle_autorefresh}` with `<input type="checkbox" id="cs_autorefresh" checked style="display:none">` in `$cshout_jsconfig['layout']` or `$cshout_jsconfig['layout_controls']` (view yahoomessenger theme for examples)
