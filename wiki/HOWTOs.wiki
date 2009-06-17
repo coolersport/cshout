@@ -1,7 +1,5 @@
 #summary Everything you would like to do with CShout is answered here.
 
-= HOW-TOs =
-
 == How to change some configuration? ==
 Just go ahead and change whatever value preset in config.inc.php. However, if you are afraid of breaking the code or want to preserve its default values for future references, you can add all your custom code into my.conf.php. If the file exists, CShout will pick it up and overwrite the default configurations. The following example shows how to change default theme to yahoomessenger theme.
 {{{
