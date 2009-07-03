@@ -44,17 +44,17 @@ function alter_smiley2(&$item1, $key, $prefix) {
 	$item1 = htmlspecialchars($key);
 }
 function containsRestrictedWords(&$text) {
-	global $restrictedwords;
-	for ($i=0;$i<count($restrictedwords);$i++)
-	if (!(stripos($text, $restrictedwords[$i]) === false))
+	global $cshout_config;
+	for ($i=0;$i<count($cshout_config['restrictedwords']);$i++)
+	if (!(stripos($text, $cshout_config['restrictedwords'][$i]) === false))
 	return true;
 	return false;
 }
 function removeBadWords(&$text, $replace = '[:)]') {
-	global $badwords;
+	global $cshout_config;
 	// add bad words to your filter here
-	for ($i=0;$i<count($badwords);$i++)
-	$text = preg_replace('/\b'.$badwords[$i].'\b/i', $replace, $text);
+	for ($i=0;$i<count($cshout_config['badwords']);$i++)
+	$text = preg_replace('/\b'.$cshout_config['badwords'][$i].'\b/i', $replace, $text);
 }
 function convertChars($m) {
 	return '&#'.intval(substr($m[0],2),16).';';
