@@ -30,6 +30,7 @@ function CShout() {
 	this.layout = '{controls}{shouts}';
 	this.layout_controls = '<div class="cs_formarea"><div>{name}</div><div>{message}</div>{shout}{help}<br/>{show_smileys}{show_search}{show_login}{show_pages}{show_navigator}{toggle_autorefresh}</div>{panel_smileys}{panel_search}{panel_login}{panel_pages}{panel_help}';
 	this.shout_template = '<div class="cs_shouter" title="{shouter_full}">{cs_delete}{cs_checkip}{shouter}<a href="#" onclick="alert(\'Shouter: {shouter_full}\\nWhen: {time} {date}\\nFrom IP: {ip}\');return(false)">on {date_short} at {time_short}</a></div><div class="cs_row{row_index}" title="{time} {date} {ip}">{shout}</div>';
+	this.force_autorefresh = false;
 	this.placeholder = 'cshout3';
 	this.order = 'topdown';
 	this.shouterlength = 12;
@@ -108,7 +109,7 @@ CShout.prototype.setup = function() {
 	txt += '<input type="button" id="cs_next_page" title="Next page" value="&rsaquo;" class="cs_buttons">';
 	html = html.replace('{show_navigator}', txt);
 	txt = '<input type="checkbox" id="cs_autorefresh" title="Toggle auto refresh" value="0"><label for="cs_autorefresh" id="cs_autorefresh_label">auto refresh</label>';
-	html = html.replace('{toggle_autorefresh}', txt);
+	html = html.replace('{toggle_autorefresh}', this.force_autorefresh ? '' : txt);
 
 	txt = '<div id="cs_smileylist" class="cs_panel"></div>';
 	html = html.replace('{panel_smileys}', txt);
@@ -257,21 +258,28 @@ CShout.prototype.setupEvents = function() {
 	}
 };
 
-CShout.prototype.executeRefresh = function() {
-	var comp = document.getElementById('cs_autorefresh');
-	if (!comp)
-		return;
-	if (comp.checked == '') { // turn off
-		if (this.autorefresh) {
-			clearTimeout(this.autorefresh);
-			this.autorefresh = null;
+CShout.prototype.executeRefresh = function($firstCall) {
+	if (!$firstCall) {
+		var refresh = this.force_autorefresh;
+		if (!refresh) {
+			var comp = document.getElementById('cs_autorefresh');
+			if (!comp)
+				return;
+			if (comp.checked == '') { // turn off
+				if (this.autorefresh) {
+					clearTimeout(this.autorefresh);
+					this.autorefresh = null;
+				}
+				return;
+			}
 		}
-	} else { // turn on
+		
+		// either this.force_autorefresh == true or cs_autorefresh is checked
 		if (this.autorefresh) {
 			cshout.getPageContent('refresh');
 		}
-		this.autorefresh = setTimeout('cshout.executeRefresh()', 5000);
 	}
+	this.autorefresh = setTimeout('cshout.executeRefresh()', 5000);
 };
 
 CShout.prototype.addEvent = function(obj, event, func) {
@@ -342,6 +350,7 @@ CShout.prototype.show = function() {
 		this.setupEvents();
 		this.getSmileys();
 		this.getPageContent(1);
+		this.executeRefresh(true);
 		this.instance++;
 	} else {
 		cshout_ph.innerHTML = 'Your browser doesn\t support Ajax';

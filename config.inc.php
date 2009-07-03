@@ -27,6 +27,7 @@ $cshout_jsconfig['placeholder']     = 'cshout3'; // id of the div container
 $cshout_jsconfig['layout']          = ''; // any html code, eg: <div style="height:300px;overflow:scroll">{shouts}</div>{controls}
 $cshout_jsconfig['layout_controls'] = ''; // any html code
 // eg: <div class="cs_formarea">{name}<br/>{message}<br/>{shout}{help}<br/>{show_smileys}{show_search}{show_login}{show_pages}{show_navigator}</div>{panel_smileys}{panel_search}{panel_login}{panel_pages}{panel_help}
+$cshout_jsconfig['force_autorefresh']= false; // on or off
 $cshout_jsconfig['width']           = '200px'; // shoutbox width
 $cshout_jsconfig['height']          = '500px'; // shoutbox height
 $cshout_jsconfig['script_url']      = (substr(strtolower($_SERVER['SERVER_PROTOCOL']),0,5)=='https'?'https':'http').'://'.$_SERVER['SERVER_NAME'].substr($_SERVER['SCRIPT_NAME'],0,strlen(basename($_SERVER['SCRIPT_NAME']))*-1) . '/cshout.php';
@@ -164,7 +165,7 @@ function cshout_show($placeholder = false) {
 	if ($placeholder !== false) $cshout_jsconfig['placeholder'] = $placeholder;
 ?>
 <script type="text/javascript">
-<?php foreach($cshout_jsconfig as $key => $value) if ($value) echo 'cshout.',$key,'=\'',$value,'\';' ?>
+<?php foreach($cshout_jsconfig as $key => $value) if ($value) echo 'cshout.',$key,'=',var_export($value),';' ?>
 window.onload = function () {
 	cshout.show();
 }
