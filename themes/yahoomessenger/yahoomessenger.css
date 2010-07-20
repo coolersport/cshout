@@ -4,6 +4,7 @@
 /* Formation of Shouts Area */
 #cs_shouts{border:1px solid #eee;margin:0;padding:2px;overflow-x:hidden;overflow-y:auto;height:300px;font-size:8pt;font-family:Tahoma,Arial,Verdana,Times,sans-serif}
 #cs_shouts div{margin:2px 0}
+#cs_shouts a{text-decoration:none}
 
 /* Formation of Buttons */
 .cs_buttons{background:#eee;border:1px solid #ddd;color:#415274;font-family:Tahoma,Arial,Verdana,Times,sans-serif;font-size:7pt;font-weight:bold;padding:1px;margin-left:1px;margin-top:1px}
