@@ -1,0 +1,33 @@
+### How to change some configuration? ###
+Just go ahead and change whatever value preset in config.inc.php. However, if you are afraid of breaking the code or want to preserve its default values for future references, you can add all your custom code into my.conf.php. If the file exists, CShout will pick it up and overwrite the default configurations. The following example shows how to change default theme to yahoomessenger theme.
+```
+<?php
+// config.inc.php
+...
+$cshout_config['theme'] = 'default';
+...
+?>
+
+<?php
+// my.conf.php
+$cshout_config['theme'] = 'yahoomessenger';
+?>
+```
+
+### How to make use of forum/CMS members' usernames for the shoutbox? ###
+
+This is useful when you don't want anonymous shouter on your shoutbox. Users must log in to shout and take responsibility for what they say. First you need to let CShout know the username to be used as following.
+
+```
+// the following can be changed in config.inc.php or added into my.conf.php if you don't want to
+// replace getLoggedUsername() function call with the one that provided by your forum/CMS framework
+$cshout_jsconfig['username'] = getLoggedUsername();
+```
+
+If the username is NOT empty, CShout will use it as shouter name regardless of what they put in the Name text field. It is recommended to remove the text field if this is applied. To remove the name input field, you can either:
+  * remove the placeholder `{name}` in `$cshout_jsconfig['layout']` or `$cshout_jsconfig['layout_controls']` (view yahoomessenger theme for examples)
+  * or hide it using css `#cs_name{display:none}`
+
+### How to force auto-refresh always on? ###
+
+Replace placeholder `{toggle_autorefresh}` with `<input type="checkbox" id="cs_autorefresh" checked style="display:none">` in `$cshout_jsconfig['layout']` or `$cshout_jsconfig['layout_controls']` (view yahoomessenger theme for examples)
